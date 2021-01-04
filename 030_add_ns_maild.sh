@@ -5,6 +5,7 @@
 ##
 
 KUBECONFIG=/etc/kubernetes/admin.conf
+maild_ns='maild'
 
-kubectl create namespace maild
+kubectl create namespace ${maild_ns}
 
