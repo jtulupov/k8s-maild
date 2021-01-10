@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  MAILD_HOSTNAME: maild.foo.local
+  MAILD_ACCOUNTS: "postmaster checkme user1 user2 user3"
+  MAILD_AUTH_MECHANISMS: "plain login cram-md5 ntlm"
+kind: ConfigMap
+metadata:
+  name: maild-config

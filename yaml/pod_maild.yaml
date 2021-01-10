@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: maild
+  labels:
+    component: maild
+    tier: test
+spec:
+  nodeSelector:
+    maild: "true"
+  volumes:
+  - name: postfix-conf
+    hostPath:
+      path: /opt/maild/etc/postfix
+  - name: dovecot-conf
+    hostPath:
+      path: /opt/maild/etc/dovecot
+  - name: vmail-home
+    hostPath:
+      path: /opt/maild/home/vmail
+  - name: postfix-spool
+    hostPath:
+      path: /opt/maild/var/spool/postfix
+  initContainers:
+  - name: init
+    image: jtulupov/k8s-maild
+    command: ["/root/init.sh"]
+    envFrom:
+    - configMapRef:
+        name: maild-config
+    volumeMounts:
+    - name: postfix-conf
+      mountPath: /etc/postfix.init
+    - name: postfix-spool
+      mountPath: /var/spool/postfix.init
+    - name: dovecot-conf
+      mountPath: /etc/dovecot.init
+    - name: vmail-home
+      mountPath: /home/vmail.init
+  containers:
+  - name: postfix
+    image: jtulupov/k8s-maild
+    volumeMounts:
+    - name: postfix-conf
+      mountPath: /etc/postfix
+    - name: postfix-spool
+      mountPath: /var/spool/postfix
+    - name: dovecot-conf
+      mountPath: /etc/dovecot
+    - name: vmail-home
+      mountPath: /home/vmail
+    command: ["/usr/lib/postfix/sbin/master", "-i", "-c", "/etc/postfix"]
+#  - image: jtulupov/k8s-maild
+#    name: dovecot
+#    - name: dovecot-conf
+#      mountPath: /etc/dovecot
